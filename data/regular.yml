@@ -1,0 +1,9 @@
+Regular:
+- action: '>><$1> $2'
+  from: console
+  perm: true
+  re: \[Chat\] <(.+?)> (.+?)[\r\n]
+- action: <<$1
+  from: group
+  perm: true
+  re: ^//(.+)$

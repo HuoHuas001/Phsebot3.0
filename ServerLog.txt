@@ -1,0 +1,72 @@
+[10/24/21 16:00:45] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:00:45] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:00:45] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:00:45] [Server API] Verbose: 	Mono: False
+[10/24/21 16:00:46] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:02:15] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:02:15] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:02:15] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:02:15] [Server API] Verbose: 	Mono: False
+[10/24/21 16:02:15] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:02:30] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:02:30] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:02:30] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:02:30] [Server API] Verbose: 	Mono: False
+[10/24/21 16:02:30] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:03:21] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:03:21] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:03:21] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:03:21] [Server API] Verbose: 	Mono: False
+[10/24/21 16:03:21] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:03:53] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:03:53] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:03:53] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:03:53] [Server API] Verbose: 	Mono: False
+[10/24/21 16:03:53] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:04:15] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:04:15] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:04:15] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:04:15] [Server API] Verbose: 	Mono: False
+[10/24/21 16:04:15] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:05:01] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:05:01] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:05:01] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:05:01] [Server API] Verbose: 	Mono: False
+[10/24/21 16:05:02] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:05:18] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:05:18] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:05:18] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:05:18] [Server API] Verbose: 	Mono: False
+[10/24/21 16:05:19] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:06:18] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:06:18] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:06:18] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:06:18] [Server API] Verbose: 	Mono: False
+[10/24/21 16:06:18] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:06:30] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:06:30] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:06:30] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:06:30] [Server API] Verbose: 	Mono: False
+[10/24/21 16:06:30] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:07:49] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:07:49] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:07:49] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:07:49] [Server API] Verbose: 	Mono: False
+[10/24/21 16:07:49] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:08:02] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:08:02] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe
+[10/24/21 16:08:02] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:08:02] [Server API] Verbose: 	Mono: False
+[10/24/21 16:08:03] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:13:40] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:13:40] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe  -config E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\serverconfig.txt
+[10/24/21 16:13:40] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:13:40] [Server API] Verbose: 	Mono: False
+[10/24/21 16:13:40] [TShock] Verbose: Loading dedicated config file: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\serverconfig.txt
+[10/24/21 16:13:40] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.
+[10/24/21 16:16:38] [Server API] Verbose: TerrariaApi - Server v2.1.0.0 started.
+[10/24/21 16:16:38] [Server API] Verbose: 	Command line: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\TerrariaServer.exe  -config E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\serverconfig.txt
+[10/24/21 16:16:38] [Server API] Verbose: 	OS: Microsoft Windows NT 6.2.9200.0 (64bit: True)
+[10/24/21 16:16:38] [Server API] Verbose: 	Mono: False
+[10/24/21 16:16:38] [TShock] Verbose: Loading dedicated config file: E:\MCServer\TShock4.4.0_Pre12_Terraria1.4.0.5\serverconfig.txt
+[10/24/21 16:16:39] [Server API] Info: Plugin TShock v4.4.0.0 (by The TShock Team) initiated.

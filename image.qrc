@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="q">
+    <file>Library\Images\window.png</file>
+    <file>Library\Images\icon_setting.png</file>
+    <file>Library\Images\ChainSquare.png</file>
+    <file>Library\Images\check.png</file>
+    <file>Library\Images\creative_icon.png</file>
+    <file>Library\Images\clock_item.png</file>
+    <file>Library\Images\cancel.png</file>
+    <file>Library\Images\xbox.png</file>
+    <file>Library\Images\background\log.gif</file>
+  </qresource>
+</RCC>

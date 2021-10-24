@@ -1,0 +1,3 @@
+This is [c/FF0000:%map%] on [c/00FFFF:TShock for Terraria].
+[c/00FF00:Current players:] [c/FFFF00:%players%]
+Type [c/FF0000:/help] for a list of commands.
