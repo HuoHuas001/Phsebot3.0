@@ -39,36 +39,10 @@
     <string>删除</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="importer">
-   <property name="geometry">
-    <rect>
-     <x>280</x>
-     <y>510</y>
-     <width>81</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>导入</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="outer">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>510</y>
-     <width>81</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>导出</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="refrusher">
    <property name="geometry">
     <rect>
-     <x>370</x>
+     <x>190</x>
      <y>510</y>
      <width>81</width>
      <height>31</height>
@@ -91,7 +65,7 @@
   <widget class="QPushButton" name="save">
    <property name="geometry">
     <rect>
-     <x>460</x>
+     <x>280</x>
      <y>510</y>
      <width>81</width>
      <height>31</height>

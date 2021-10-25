@@ -3,6 +3,7 @@ import yaml
 import json
 from Library.Tools.motd import Server
 from Library.Tools.tool import WriteYaml
+from Library.Tools.Logger import *
 import re
 from datetime import datetime
 import time
@@ -15,9 +16,12 @@ def read_file(file):
             return json.loads(content)
         elif '.yml' in file:
             content = f.read().replace('\/n','\n')
+
             return yaml.load(content, Loader=yaml.FullLoader)
 
-def WriteStartBat():
+def WriteStartBat(window):
+    global windows
+    windows = window
     file_content = f'''@echo off
 cd {config['ServerPath']}
 {config['ServerPath'][0]}:
@@ -305,14 +309,29 @@ def changeFile(file,dic):
     elif file == 'Xboxid':
         Xboxid = dic
         WriteYaml('data/xbox.yml',Xboxid)
+    elif file == 'Crontab':
+        from Library.Tools.Crontab import crontab
+        Crontab = dic
+        crontab()
+        WriteYaml('data/crontab.yml',Crontab)
         
-
-
+def safe_exit():
+    try:
+        if windows.on_bds.getBDSPoll():
+            windows.on_bds.Runcmd('stop')
+            time.sleep(3)
+            return True
+        else:
+            return True
+    except Exception as e:
+        log_debug(e)
+        return False
 def readFile():
-    global config,Language,Regular,Xboxid
+    global config,Language,Regular,Xboxid,Crontab
     config = read_file('data/config.yml')
     Language = read_file('data/Language.yml')
     Regular = read_file('data/regular.yml')
     Xboxid = read_file('data/xbox.yml')
+    Crontab = read_file('data/crontab.yml')
 
 readFile()

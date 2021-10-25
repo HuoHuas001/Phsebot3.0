@@ -10,7 +10,9 @@ from Library.UIs.Ui_xbox import *
 from Library.Tools.Bot import *
 from Library.Tools.basic import *
 from Library.Tools.tool import *
+from Library.Tools.Crontab import *
 from Library.Tools.FakePlayer import *
+from Library.UIs.Window import *
 import subprocess
 import threading
 import time
@@ -18,8 +20,8 @@ import asyncio
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Library.mcsm.http_req import startServer,stopServer,getServer,sendCmd
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon,QStandardItemModel,QStandardItem,QTextCursor
+from PyQt5.QtCore import Qt,QPoint
+from PyQt5.QtGui import QIcon,QStandardItemModel,QStandardItem,QTextCursor,QMouseEvent
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QStackedLayout, QWidget,
                              QToolBar, QToolButton, QStyle, QColorDialog, QFontDialog,
                             QVBoxLayout, QGroupBox, QRadioButton,QPushButton,QHeaderView)
@@ -41,10 +43,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionXbox.triggered.connect(self.show_panel)
         self.actionSetting.triggered.connect(self.show_panel)
         self.qsl = QStackedLayout(self.Show_Content)
+        self.initFloating()
         #添加叠加样式
         self.on_bds = BDS()
         self.on_regular = Regular_C()
-        self.on_crontab = Crontab()
+        self.on_crontab = Crontab_C()
         self.on_setting = Setting()
         self.on_xbox = Xbox()
         self.qsl.addWidget(self.on_bds)
@@ -52,6 +55,25 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.qsl.addWidget(self.on_crontab)
         self.qsl.addWidget(self.on_xbox)
         self.qsl.addWidget(self.on_setting)
+
+    def initFloating(self):
+        screen_width = app.primaryScreen().geometry().width()
+        screen_height = app.primaryScreen().geometry().height()
+        self.floating = Floating()
+        self.floating.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
+        self.floating.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        window_width = 94
+        window_height = 94
+        self.floating.setGeometry(screen_width - window_width - 10, screen_height//2 - 150, window_width, window_height)
+
+
+    def changeEvent(self, event):
+        if event.type() == QtCore.QEvent.WindowStateChange:
+            if self.windowState() & QtCore.Qt.WindowMinimized:
+                event.ignore()
+                self.floating.show()
+            if self.windowState() == Qt.WindowNoState:
+                self.floating.close()
         
     def show_panel(self):
         ojn = self.sender().objectName()
@@ -635,10 +657,11 @@ class Regular_C(QWidget,Ui_Regular):
 
     def remove(self):
         line = self.tableView.currentIndex().row()
-        RegularX = Regular
-        RegularX['Regular'].pop(line)
-        changeFile('Regular',RegularX)
-        self.update()
+        if line != -1:
+            RegularX = Regular
+            RegularX['Regular'].pop(line)
+            changeFile('Regular',RegularX)
+            self.update()
 
     def saveF(self):
         l = []
@@ -662,15 +685,115 @@ class Regular_C(QWidget,Ui_Regular):
         changeFile('Regular',RegularX)
         self.update()
 
-class Crontab(QWidget,Ui_Crontab):
+class Crontab_C(QWidget,Ui_Crontab):
     def __init__(self) -> None:
-        super(Crontab,self).__init__()
+        super(Crontab_C,self).__init__()
         self.setupUi(self)
+        self.update()
+        self.refrusher.clicked.connect(self.update)
+        self.deleter.clicked.connect(self.remove)
+        self.newer.clicked.connect(self.addF)
+        self.save.clicked.connect(self.saveF)
+
+    def update(self):
+        readFile()
+        from Library.Tools.basic import config,Language,Xboxid,Regular
+        self.model= QStandardItemModel(len(Crontab['Crontab']),2)
+        self.model.setHorizontalHeaderLabels(['表达式','操作'])
+        for i in Crontab['Crontab']:
+            cr_item=QStandardItem(i['crontab'])
+            action_item = QStandardItem(i['action'])
+            self.model.setItem(Crontab['Crontab'].index(i),0,cr_item)
+            self.model.setItem(Crontab['Crontab'].index(i),1,action_item)
+
+        self.tableView.setModel(self.model)
+        #水平方向标签拓展剩下的窗口部分，填满表格
+        self.tableView.horizontalHeader().setStretchLastSection(True)
+        #水平方向，表格大小拓展到适当的尺寸      
+        self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+    def addF(self):
+        CrontabX = Crontab
+        Crontab['Crontab'].append({
+            'crontab': '*/5 * * * *',
+            'action': '>>say hello'
+        }) 
+        changeFile('Crontab',CrontabX)
+        self.update()
+
+    def remove(self):
+        line = self.tableView.currentIndex().row()
+        if line != -1:
+            CrontabX = Crontab
+            CrontabX['Crontab'].pop(line)
+            changeFile('Crontab',CrontabX)
+            self.update()
+
+    def saveF(self):
+        l = []
+        for b in range(len(Crontab['Crontab'])):
+            ln = []
+            for i in range(2):
+                new_index = self.tableView.model().index(b,i)
+                ln.append(self.tableView.model().data(new_index))
+            l.append(ln)
+        CrontabX = {'Crontab':[]}
+        for i in l:
+            CrontabX['Crontab'].append({
+                'crontab': i[0],
+                'action': i[1],
+            }) 
+        changeFile('Crontab',CrontabX)
+        self.update()
 
 class Setting(QWidget,Ui_Setting):
     def __init__(self) -> None:
         super(Setting,self).__init__()
         self.setupUi(self)
+
+class Floating(QWidget,Ui_Float_Window):
+    def __init__(self) -> None:
+        super(Floating,self).__init__()
+        self.setupUi(self)
+        self.setCursor(Qt.PointingHandCursor)
+        dsk = QApplication.primaryScreen()
+        self.screen_width = dsk.geometry().width()
+        self.screen_height = dsk.geometry().height()
+
+    def mouseDoubleClickEvent(self, e):   # 双击
+        state = myWin.windowState()
+        if state == Qt.WindowMinimized:
+            myWin.setWindowState(Qt.WindowNoState)
+            self.close()
+
+    #鼠标按下时，记录鼠标相对窗口的位置
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.LeftButton:
+            self._startPos = event.pos()
+
+    # 鼠标移动时，移动窗口跟上鼠标；同时限制窗口位置，不能移除主屏幕
+    def mouseMoveEvent(self, event: QMouseEvent):
+        # event.pos()减去最初相对窗口位置，获得移动距离(x,y)
+        self._wmGap = event.pos() - self._startPos
+        # 移动窗口，保持鼠标与窗口的相对位置不变
+        # 检查是否移除了当前主屏幕
+        # 左方界限
+        final_pos = self.pos() + self._wmGap
+        if self.frameGeometry().topLeft().x() + self._wmGap.x() <= 0:
+            final_pos.setX(0)
+        # 上方界限
+        if self.frameGeometry().topLeft().y() + self._wmGap.y() <= 0:
+            final_pos.setY(0)
+        # 右方界限
+        if self.frameGeometry().bottomRight().x() + self._wmGap.x() >= self.screen_width:
+            final_pos.setX(self.screen_width - self.window_width)
+        # 下方界限
+        if self.frameGeometry().bottomRight().y() + self._wmGap.y() >= self.screen_height:
+            final_pos.setY(self.screen_height - self.window_height)
+        self.move(final_pos)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        pass
 
 class Xbox(QWidget,Ui_Xbox):
     def __init__(self) -> None:
@@ -714,10 +837,11 @@ class Xbox(QWidget,Ui_Xbox):
 
     def remove(self):
         line = self.tableView.currentIndex().row()
-        XboxidX = Xboxid
-        XboxidX['Xbox'].pop(line)
-        changeFile('Xboxid',XboxidX)
-        self.update()
+        if line != -1:
+            XboxidX = Xboxid
+            XboxidX['Xbox'].pop(line)
+            changeFile('Xboxid',XboxidX)
+            self.update()
 
     def saveF(self):
         l = []
@@ -747,11 +871,17 @@ class Xbox(QWidget,Ui_Xbox):
         self.update()
 
 if __name__ == '__main__':
-    #写入路径
-    WriteStartBat()
     app = QApplication(sys.argv)
     myWin = MyWindow()
     myWin.show()
     bot = Bot()
     bot.login(bot,myWin)
+    #写入启动bat
+    WriteStartBat(myWin)
+    #执行Crontab任务
+    crontab()
+    crontab_thread = threading.Thread(target=runcron,args=(bot,myWin))
+    crontab_thread.setDaemon(True)
+    crontab_thread.setName('Crontab')
+    crontab_thread.start()
     os._exit(app.exec_())

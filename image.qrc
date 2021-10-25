@@ -8,6 +8,5 @@
     <file>Library\Images\clock_item.png</file>
     <file>Library\Images\cancel.png</file>
     <file>Library\Images\xbox.png</file>
-    <file>Library\Images\background\log.gif</file>
   </qresource>
 </RCC>
