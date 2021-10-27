@@ -7,3 +7,7 @@ Regular:
   from: group
   perm: true
   re: ^//(.+)$
+- action: '>>$1'
+  from: console
+  perm: false
+  re: \[INFO\]\sTPS:(.+?)[\r]

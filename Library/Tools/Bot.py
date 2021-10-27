@@ -1,5 +1,6 @@
 import json
 from json.decoder import JSONDecodeError
+from re import T
 import threading
 from Library.Tools.basic import *
 import websocket as ws
@@ -12,10 +13,9 @@ def RecvMsg(websocket,bot,myWin):
         time.sleep(0.1)
         try:
             j = json.loads(websocket.recv())
-        except ws.WebSocketTimeoutException as e:
+        except Exception as e:
             log_debug(e)
-        except JSONDecodeError as e:
-            log_debug(e)
+            break
 
         if 'data' in j and 'type' in j['data'] and j['syncId'] != '123':
             if j['data']['type'] == "GroupMessage":
@@ -274,17 +274,48 @@ class Bot():
             
     #发送卡片
     def send_app(self,group,code):
-        msgjson = {
-            "target":group,
-            "messageChain":[{
-        "type": "App",
-        "content": code
-    }]
-        }
-        mj = {
-            "syncId": 12345,
-            "command": "sendGroupMessage",
-            "subCommand": None,
-            "content": msgjson
-        }
-        self.ws.send(json.dumps(mj))
+        try:
+            msgjson = {
+                "target":group,
+                "messageChain":[{
+            "type": "App",
+            "content": code
+        }]
+            }
+            mj = {
+                "syncId": 12345,
+                "command": "sendGroupMessage",
+                "subCommand": None,
+                "content": msgjson
+            }
+            self.ws.send(json.dumps(mj))
+        except Exception as e:
+            log_debug(e)
+
+    def tReconnect(self):
+        rec = threading.Thread(target=self.reconnect)
+        rec.setDaemon(True)
+        rec.setName('Reconnect')
+        rec.start()
+
+    def reconnect(self):
+        self.reconnect_N = 0
+        self.disconnect()
+        log_info('重连中...')
+        if self.reconnect_N < 10:
+            while self.reconnect_N <= 10:
+                if self.login(self.bot,self.win):
+                    self.reconnect_N = 0
+                    break
+                else:
+                    log_error('连接失败！剩余尝试次数:'+str(10-self.reconnect_N)+'/10')
+                    self.reconnect_N += 1
+            else:
+                log_error('尝试连接无果，请检查后手动重试')
+        
+
+    def disconnect(self):
+        try:
+            self.ws.close(0)
+        except AttributeError:
+            pass

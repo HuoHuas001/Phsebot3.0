@@ -56,6 +56,18 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.qsl.addWidget(self.on_xbox)
         self.qsl.addWidget(self.on_setting)
 
+    def safe_exit(self):
+        try:
+            if self.on_bds.getBDSPoll():
+                self.on_bds.Runcmd('stop')
+                #time.sleep(3)
+                return True
+            else:
+                return True
+        except Exception as e:
+            log_debug(e)
+            return False
+
     def initFloating(self):
         screen_width = app.primaryScreen().geometry().width()
         screen_height = app.primaryScreen().geometry().height()
@@ -144,6 +156,87 @@ class InLine_ERR(QtCore.QThread):
 
     def run(self):
         self.err()
+
+class InLine_P(QtCore.QThread):
+    updated = QtCore.pyqtSignal(str)
+    def __init__(self,bds) -> None:
+        super(InLine_P,self).__init__()
+        self.bds = bds
+
+    def checkBDS(self):
+        if not config['mcsm']['enable']:
+            while True:
+                time.sleep(1)
+                if not self.bds.getBDSPoll() and self.bds.NormalStop == True:
+                    self.bds.display('[Phsebot] 服务端进程已停止')  
+                    self.bds.pushButton_3.setEnabled(False)
+                    self.bds.pushButton.setEnabled(True)
+                    self.bds.RunCmd.setEnabled(False)
+                    self.bds.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
+                    self.bds.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
+                    self.bds.ServerVersion.setText("服务器版本:")
+                    self.bds.ServerWorld.setText("服务器存档:")
+                    self.bds.ServerState.setText("服务器状态:")
+                    myWin.setWindowTitle('Phsebot')
+                    break
+
+                elif not self.bds.getBDSPoll() and self.bds.NormalStop == False and config['AutoRestart']:
+                    if Language['AbendServer'] != False:
+                        for i in config['Group']:
+                            bot.sendGroupMsg(i,Language['AbendServer'])
+                    if Language['RestartServer'] != False:
+                        for i in config['Group']:
+                            bot.sendGroupMsg(i,Language['RestartServer'])
+                    self.bds.display('[Phsebot] 服务端进程正在重启')
+                    self.bds.ServerVersion.setText("服务器版本:")
+                    self.bds.ServerWorld.setText("服务器存档:")
+                    self.bds.ServerState.setText("服务器状态:")
+                    myWin.setWindowTitle('Phsebot')
+                    if config['MaxAutoRestart'] > self.bds.Restart:
+                        self.bds.startServer()
+                        self.bds.Restart += 1
+                    else:
+                        if Language['MaxRestart'] != False:
+                            for i in config['Group']:
+                                bot.sendGroupMsg(i,Language['MaxRestart'])
+                        self.bds.Restart = 0
+                    break
+
+                elif not self.bds.getBDSPoll() and self.bds.NormalStop == False and config['AutoRestart'] == False:
+                    if Language['AbendServer'] != False:
+                        for i in config['Group']:
+                            bot.sendGroupMsg(i,Language['AbendServer'])
+                    self.bds.display('[Phsebot] 服务端进程已停止')  
+                    self.bds.pushButton_3.setEnabled(False)
+                    self.bds.pushButton.setEnabled(True)
+                    self.bds.RunCmd.setEnabled(False)
+                    self.bds.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
+                    self.bds.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
+                    self.bds.ServerVersion.setText("服务器版本:")
+                    self.bds.ServerWorld.setText("服务器存档:")
+                    self.bds.ServerState.setText("服务器状态:")
+                    myWin.setWindowTitle('Phsebot')
+                    break
+        else:
+            from Library.mcsm.http_req import startServer,stopServer,getServer,sendCmd
+            while True:
+                time.sleep(5)
+                get = getServer(config['mcsm']['serverName'])
+                if not get['status']:
+                    self.bds.display('[Phsebot] 服务端进程已停止')  
+                    self.bds.pushButton_3.setEnabled(False)
+                    self.bds.pushButton.setEnabled(True)
+                    self.bds.RunCmd.setEnabled(False)
+                    self.bds.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
+                    self.bds.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
+                    self.bds.ServerVersion.setText("服务器版本:")
+                    self.bds.ServerWorld.setText("服务器存档:")
+                    self.bds.ServerState.setText("服务器状态:")
+                    break
+        
+
+    def run(self):
+        self.checkBDS()
         
 
 class BDS(QWidget, Ui_BDS):
@@ -170,6 +263,13 @@ class BDS(QWidget, Ui_BDS):
         self.Port = 0
         self.Version = ''
         self.World = ''
+        self.Players = {
+            "Now":0,
+            "Max":0,
+            "Player":[],
+            "tps":20.0
+        }
+        self.lastLine = ''
     def display(self,strs):
         self.BDSLogs.append(strs)
         self.catch_in_regular(strs)
@@ -180,80 +280,24 @@ class BDS(QWidget, Ui_BDS):
     def clean_display(self):
         self.BDSLogs.setPlainText('')
 
-    def checkBDS(self):
-        if not config['mcsm']['enable']:
-            while True:
-                time.sleep(1)
-                if not self.getBDSPoll() and self.NormalStop == True:
-                    self.display('[Phsebot] 服务端进程已停止')  
-                    self.pushButton_3.setEnabled(False)
-                    self.pushButton.setEnabled(True)
-                    self.RunCmd.setEnabled(False)
-                    self.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
-                    self.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
-                    self.ServerVersion.setText("服务器版本:")
-                    self.ServerWorld.setText("服务器存档:")
-                    self.ServerState.setText("服务器状态:")
-                    myWin.setWindowTitle('Phsebot')
-                    break
-
-                elif not self.getBDSPoll() and self.NormalStop == False and config['AutoRestart']:
-                    if Language['AbendServer'] != False:
-                        for i in config['Group']:
-                            bot.sendGroupMsg(i,Language['AbendServer'])
-                    if Language['RestartServer'] != False:
-                        for i in config['Group']:
-                            bot.sendGroupMsg(i,Language['RestartServer'])
-                    self.display('[Phsebot] 服务端进程正在重启')
-                    self.ServerVersion.setText("服务器版本:")
-                    self.ServerWorld.setText("服务器存档:")
-                    self.ServerState.setText("服务器状态:")
-                    myWin.setWindowTitle('Phsebot')
-                    if config['MaxAutoRestart'] > self.Restart:
-                        self.startServer()
-                        self.Restart += 1
-                    else:
-                        if Language['MaxRestart'] != False:
-                            for i in config['Group']:
-                                bot.sendGroupMsg(i,Language['MaxRestart'])
-                        self.Restart = 0
-                    break
-
-                elif not self.getBDSPoll() and self.NormalStop == False and config['AutoRestart'] == False:
-                    if Language['AbendServer'] != False:
-                        for i in config['Group']:
-                            bot.sendGroupMsg(i,Language['AbendServer'])
-                    self.display('[Phsebot] 服务端进程已停止')  
-                    self.pushButton_3.setEnabled(False)
-                    self.pushButton.setEnabled(True)
-                    self.RunCmd.setEnabled(False)
-                    self.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
-                    self.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
-                    self.ServerVersion.setText("服务器版本:")
-                    self.ServerWorld.setText("服务器存档:")
-                    self.ServerState.setText("服务器状态:")
-                    myWin.setWindowTitle('Phsebot')
-                    break
-        else:
-            from Library.mcsm.http_req import startServer,stopServer,getServer,sendCmd
-            while True:
-                time.sleep(5)
-                get = getServer(config['mcsm']['serverName'])
-                if not get['status']:
-                    self.display('[Phsebot] 服务端进程已停止')  
-                    self.pushButton_3.setEnabled(False)
-                    self.pushButton.setEnabled(True)
-                    self.RunCmd.setEnabled(False)
-                    self.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
-                    self.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
-                    self.ServerVersion.setText("服务器版本:")
-                    self.ServerWorld.setText("服务器存档:")
-                    self.ServerState.setText("服务器状态:")
-                    break
 
     def catch_regular(self,line):
         line += '\r\n'
         useconsoleregular(myWin,bot,self.Port,line)
+
+        #记录list
+        lists = re.findall(r'^There\sare\s(.+?)\/(.+?)\splayers',line)
+        if lists != []:
+            self.lastLine = line
+            self.Players['Now'] = lists[0][0]
+            self.Players['Max'] = lists[0][1]
+
+        if 'There are ' in self.lastLine:
+            self.Players['Player'] = line.replace('\r\n','').split(', ')
+
+        if '[INFO] TPS:' in line:
+            self.Players['tps'] = float(line.replace('[INFO] TPS:','').replace('\r\n',''))
+
 
     def catch_in_regular(self,line):
         global Port
@@ -331,6 +375,42 @@ class BDS(QWidget, Ui_BDS):
             if Language['Crashed'] != False:
                 for b in config["Group"]:
                     bot.sendGroupMsg(b,Language['Crashed'])
+    #输出list名单
+    def outList(self):
+        time.sleep(1)
+        if Language['OnlineList'] != False:
+            pl = ''
+            for i in self.Players['Player']:
+                if(pl == ''):
+                    pl += i
+                else:
+                    pl += ' '+i
+            l = Language['OnlineList'].replace(r'%Online%',str(self.Players['Now'])).replace(r'%Max%',str(self.Players['Max'])).replace(r'%Player%',pl)
+            for i in config['Group']:
+                bot.sendGroupMsg(i,l)
+
+    def cardlist(self):
+        time.sleep(1)
+        if config['ServerInfoCard']['Enable']:
+            card = config['ServerInfoCard']['CardJson']
+            #改变
+            card = card.replace('%Online%',str(self.Players['Now']))
+            card = card.replace('%Max%',str(self.Players["Max"]))
+            card = card.replace('%Tps%',str(self.Players['tps']))
+            pl = ''
+            for i in self.Players['Player']:
+                if(pl == ''):
+                    pl += i
+                else:
+                    pl += ' '+i
+            card = card.replace('%Players%',pl)
+            #替换logo
+            if config['ServerInfoCard']['Logo'] != '':
+                card = card.replace(r'%Logo%','https:\/\/z3.ax1x.com\/2021\/09\/09\/hOPbZQ.png')
+            else:
+                card = card.replace(r'%Logo%',config['ServerInfoCard']['Logo'])
+            for i in config['Group']:
+                bot.send_app(i,card)
 
     def Botruncmd(self,text:str):
         global NormalStop,Started
@@ -549,9 +629,11 @@ class BDS(QWidget, Ui_BDS):
         self.workerr = InLine_ERR(self.bds)
         self.workerr.start()
         self.workerr.updated.connect(self.display)
-        checkbds = threading.Thread(target=self.checkBDS)
-        checkbds.setName('CheckBDS')
-        checkbds.start()
+
+        #开启进程检查线程
+        self.pro = InLine_P(myWin.on_bds)
+        self.pro.start()
+        self.pro.updated.connect(self.display)
 
     def forceStop(self):
         self.NormalStop = True
@@ -756,6 +838,26 @@ class Setting(QWidget,Ui_Setting):
     def __init__(self) -> None:
         super(Setting,self).__init__()
         self.setupUi(self)
+        self.toolButton.clicked.connect(self.open_file)
+        self.update()
+
+    def open_file(self):
+        fileName,fileType = QtWidgets.QFileDialog.getOpenFileName(self, "选取文件", os.getcwd(), 
+        "All Files(*)")
+        filepath,tempfilename = os.path.split(fileName)
+        filepath = filepath.replace('/','\\')
+        configc = config
+        configc['ServerCmd'] = tempfilename
+        configc['ServerPath'] = filepath
+        changeFile('config',configc)
+        self.update()
+    
+    def update(self):
+        path = config['ServerPath']
+        if path[-1] != '\\':
+            path += '\\'
+        self.lineEdit.setText(path+config['ServerCmd'])
+
 
 class Floating(QWidget,Ui_Float_Window):
     def __init__(self) -> None:
@@ -953,6 +1055,8 @@ if __name__ == '__main__':
     myWin.show()
     bot = Bot()
     bot.login(bot,myWin)
+    myWin.actionReconnect.triggered.connect(bot.tReconnect)
+    myWin.actionDisconnect.triggered.connect(bot.disconnect)
     #写入启动bat
     WriteStartBat(myWin)
     #执行Crontab任务

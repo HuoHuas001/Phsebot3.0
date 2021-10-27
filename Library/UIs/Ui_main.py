@@ -9,7 +9,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QPushButton,QMessageBox
-from Library.Tools.basic import safe_exit
 from Library.UIs.Ui_Floating import *
 
 
@@ -151,7 +150,7 @@ class Ui_MainWindow(object):
         quitMsgBox.setWindowIcon(icon)
         # 判断返回值，如果点击的是Yes按钮，我们就关闭组件和应用，否则就忽略关闭事件
         if quitMsgBox.clickedButton() == buttonY:
-            if safe_exit():
+            if self.safe_exit():
                 event.accept()
             else:
                 event.ignore()

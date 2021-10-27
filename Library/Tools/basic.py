@@ -299,7 +299,7 @@ def changeFile(file,dic):
     if file == 'config':
         config = dic
         WriteYaml('data/config.yml',config)
-        WriteStartBat()
+        WriteStartBat(windows)
     elif file == 'Language':
         Language = dic
         WriteYaml('data/Language.yml',config)
@@ -314,18 +314,7 @@ def changeFile(file,dic):
         Crontab = dic
         crontab()
         WriteYaml('data/crontab.yml',Crontab)
-        
-def safe_exit():
-    try:
-        if windows.on_bds.getBDSPoll():
-            windows.on_bds.Runcmd('stop')
-            time.sleep(3)
-            return True
-        else:
-            return True
-    except Exception as e:
-        log_debug(e)
-        return False
+
 def readFile():
     global config,Language,Regular,Xboxid,Crontab
     config = read_file('data/config.yml')
