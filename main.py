@@ -20,7 +20,7 @@ import asyncio
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Library.mcsm.http_req import startServer,stopServer,getServer,sendCmd
-from PyQt5.QtCore import Qt,QPoint
+from PyQt5.QtCore import Qt,QPoint,QPropertyAnimation,QRect
 from PyQt5.QtGui import QIcon,QStandardItemModel,QStandardItem,QTextCursor,QMouseEvent
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QStackedLayout, QWidget,
                              QToolBar, QToolButton, QStyle, QColorDialog, QFontDialog,
@@ -168,6 +168,8 @@ class BDS(QWidget, Ui_BDS):
         self.NormalStop = False
         self.Restart = 0
         self.Port = 0
+        self.Version = ''
+        self.World = ''
     def display(self,strs):
         self.BDSLogs.append(strs)
         self.catch_in_regular(strs)
@@ -192,6 +194,7 @@ class BDS(QWidget, Ui_BDS):
                     self.ServerVersion.setText("服务器版本:")
                     self.ServerWorld.setText("服务器存档:")
                     self.ServerState.setText("服务器状态:")
+                    myWin.setWindowTitle('Phsebot')
                     break
 
                 elif not self.getBDSPoll() and self.NormalStop == False and config['AutoRestart']:
@@ -205,6 +208,7 @@ class BDS(QWidget, Ui_BDS):
                     self.ServerVersion.setText("服务器版本:")
                     self.ServerWorld.setText("服务器存档:")
                     self.ServerState.setText("服务器状态:")
+                    myWin.setWindowTitle('Phsebot')
                     if config['MaxAutoRestart'] > self.Restart:
                         self.startServer()
                         self.Restart += 1
@@ -228,6 +232,7 @@ class BDS(QWidget, Ui_BDS):
                     self.ServerVersion.setText("服务器版本:")
                     self.ServerWorld.setText("服务器存档:")
                     self.ServerState.setText("服务器状态:")
+                    myWin.setWindowTitle('Phsebot')
                     break
         else:
             from Library.mcsm.http_req import startServer,stopServer,getServer,sendCmd
@@ -277,18 +282,18 @@ class BDS(QWidget, Ui_BDS):
         #内置正则
             #版本
         if 'INFO] Version' in line:
-            Version = re.findall(r'Version\s(.+?)\s',line)[0]
-            self.ServerVersion.setText("服务器版本: "+Version)
+            self.Version = re.findall(r'Version\s(.+?)\s',line)[0]
+            self.ServerVersion.setText("服务器版本: "+self.Version)
             if Language['ServerVersion'] != False:
                 for b in config["Group"]:
-                    bot.sendGroupMsg(b,Language['ServerVersion'].replace('%Version%',Version))
+                    bot.sendGroupMsg(b,Language['ServerVersion'].replace('%Version%',self.Version))
             #打开世界
         if 'opening' in line:
-            World = re.findall(r'opening\s(.+?)[\r\s]',line)[0]
-            self.ServerWorld.setText("服务器存档: "+World)
+            self.World = re.findall(r'opening\s(.+?)[\r\s]',line)[0].replace('worlds/','')
+            self.ServerWorld.setText("服务器存档: "+self.World)
             if Language['OpenWorld'] != False:
                 for b in config["Group"]:
-                    bot.sendGroupMsg(b,Language['OpenWorld'].replace('%World%',World))
+                    bot.sendGroupMsg(b,Language['OpenWorld'].replace('%World%',self.World))
             #加载端口
         if 'IPv4' in line:
             self.Port = int(re.findall(r'^\[INFO\]\sIPv4\ssupported,\sport:\s(.+?)$',line)[0])
@@ -305,6 +310,7 @@ class BDS(QWidget, Ui_BDS):
             ConnectAllPlayer()
             self.Started = True
             ChangeBotName(bot,self.Port,self.Started)
+            myWin.setWindowTitle('Phsebot - '+self.World+' '+self.Version)
 
             #关服中
         if '[INFO] Server stop requested.' in line:
@@ -759,6 +765,9 @@ class Floating(QWidget,Ui_Float_Window):
         dsk = QApplication.primaryScreen()
         self.screen_width = dsk.geometry().width()
         self.screen_height = dsk.geometry().height()
+        self.hidden = False
+        self.window_width = 60
+        self.window_height = 60
 
     def mouseDoubleClickEvent(self, e):   # 双击
         state = myWin.windowState()
@@ -794,6 +803,74 @@ class Floating(QWidget,Ui_Float_Window):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         pass
+
+    def enterEvent(self, event):
+        self.hide_or_show('show', event)
+
+    def leaveEvent(self, event):
+        self.hide_or_show('hide', event)
+
+    def hide_or_show(self, mode, event):
+        # 获取窗口左上角x,y
+        pos = self.frameGeometry().topLeft()
+        if mode == 'show' and self.hidden:
+            # 窗口左上角x + 窗口宽度 大于屏幕宽度，从右侧滑出
+            if pos.x() + self.window_width >= self.screen_width:
+                # 需要留10在里边，否则边界跳动
+                self.startAnimation(self.screen_width - self.window_width, pos.y())
+                event.accept()
+                self.hidden = False
+            # 窗口左上角x 小于0, 从左侧滑出
+            elif pos.x() <= 0:
+                self.startAnimation(0, pos.y())
+                event.accept()
+                self.hidden = False
+            # 窗口左上角y 小于0, 从上方滑出
+            elif pos.y() <= 0:
+                self.startAnimation(pos.x(), 0)
+                event.accept()
+                self.hidden = False
+        elif mode == 'hide' and (not self.hidden):
+            if pos.x() + self.window_width >= self.screen_width:
+                # 留10在外面
+                self.startAnimation(self.screen_width - 10, pos.y(), mode, 'right')
+                event.accept()
+                self.hidden = True
+            elif pos.x() <= 0:
+                # 留10在外面
+                self.startAnimation(10 - self.window_width, pos.y(), mode, 'left')
+                event.accept()
+                self.hidden = True
+            elif pos.y() <= 0:
+                # 留10在外面
+                self.startAnimation(pos.x(), 10 - self.window_height, mode, 'up')
+                event.accept()
+                self.hidden = True
+
+    def startAnimation(self, x, y, mode='show', direction=None):
+        animation = QPropertyAnimation(self, b"geometry", self)
+        # 滑出动画时长
+        animation.setDuration(200)
+        # 隐藏时，只留10在外边，防止跨屏
+        # QRect限制其大小，防止跨屏
+        num = QApplication.desktop().screenCount()
+        if mode == 'hide':
+            if direction == 'right':
+                animation.setEndValue(QRect(x, y, 10, self.window_height))
+            elif direction == 'left':
+                # 多屏时采用不同的隐藏方法，防止跨屏
+                if num < 2:
+                    animation.setEndValue(QRect(x, y, self.window_width, self.window_height))
+                else:
+                    animation.setEndValue(QRect(0, y, 10, self.window_height))
+            else:
+                if num < 2:
+                    animation.setEndValue(QRect(x, y, self.window_width, self.window_height))
+                else:
+                    animation.setEndValue(QRect(x, 0, self.window_width, 10))
+        else:
+            animation.setEndValue(QRect(x, y, self.window_width, self.window_height))
+        animation.start()
 
 class Xbox(QWidget,Ui_Xbox):
     def __init__(self) -> None:

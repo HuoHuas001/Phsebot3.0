@@ -136,7 +136,7 @@ class Ui_MainWindow(object):
         # 创建一个消息盒子（提示框）
         quitMsgBox = QMessageBox()
         # 设置提示框的标题
-        quitMsgBox.setWindowTitle('确认窗口')
+        quitMsgBox.setWindowTitle('Phsebot - 警告')
         # 设置提示框的内容
         quitMsgBox.setText('你确定退出吗？')
         # 创建两个点击的按钮，修改文本显示内容

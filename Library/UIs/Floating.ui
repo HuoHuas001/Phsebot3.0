@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>94</width>
-    <height>94</height>
+    <width>60</width>
+    <height>60</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,11 +16,32 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>13</x>
-     <y>11</y>
+     <x>0</x>
+     <y>0</y>
      <width>60</width>
      <height>60</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>60</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>60</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="toolTip">
+    <string comment="Phsebot!" extracomment="Phsebot114514"/>
+   </property>
+   <property name="statusTip">
+    <string comment="PHB111" extracomment="PHB123"/>
+   </property>
+   <property name="whatsThis">
+    <string comment="P111" extracomment="P222"/>
    </property>
    <property name="styleSheet">
     <string notr="true">border-image:url(:/q/Library/Images/window.png)</string>
