@@ -1060,9 +1060,10 @@ if __name__ == '__main__':
     #写入启动bat
     WriteStartBat(myWin)
     #执行Crontab任务
-    crontab()
-    crontab_thread = threading.Thread(target=runcron,args=(bot,myWin))
-    crontab_thread.setDaemon(True)
-    crontab_thread.setName('Crontab')
-    crontab_thread.start()
+    if config['EnableCron']:
+        crontab()
+        crontab_thread = threading.Thread(target=runcron,args=(bot,myWin))
+        crontab_thread.setDaemon(True)
+        crontab_thread.setName('Crontab')
+        crontab_thread.start()
     os._exit(app.exec_())

@@ -4,25 +4,26 @@ from Library.Tools.basic import *
 import time
 #解析cron
 def crontab():
-    from Library.Tools.basic import readFile
-    Crontab = read_file('data/crontab.yml')
-    croncomment = []
-    cronl = Crontab['Crontab']
-    str_time_now= datetime.now()
-    for i in cronl:
-        try:
-            iter=croniter(i['crontab'],str_time_now)
-            time = iter.get_next(datetime).strftime("%Y-%m-%d-%H-%M-%S")
-            cmd = i['action']
-            croncomment.append({'time':time,'cmd':cmd,'cron':i['crontab']})
-        except CroniterNotAlphaError as e:
-            log_debug(e)
-            log_error(i['cron']+' 解析失败')
-        except CroniterBadCronError as e:
-            log_debug(e)
-            log_error(i['cron']+' 解析失败')
-    WriteYaml('Temp/crontabTemp.yml',croncomment)
-    log_info('Crontab定时任务开始运行,运行时间:'+str_time_now.strftime("%Y-%m-%d %H:%M:%S"))
+    if config['EnableCron']:
+        from Library.Tools.basic import readFile
+        Crontab = read_file('data/crontab.yml')
+        croncomment = []
+        cronl = Crontab['Crontab']
+        str_time_now= datetime.now()
+        for i in cronl:
+            try:
+                iter=croniter(i['crontab'],str_time_now)
+                time = iter.get_next(datetime).strftime("%Y-%m-%d-%H-%M-%S")
+                cmd = i['action']
+                croncomment.append({'time':time,'cmd':cmd,'cron':i['crontab']})
+            except CroniterNotAlphaError as e:
+                log_debug(e)
+                log_error(i['cron']+' 解析失败')
+            except CroniterBadCronError as e:
+                log_debug(e)
+                log_error(i['cron']+' 解析失败')
+        WriteYaml('Temp/crontabTemp.yml',croncomment)
+        log_info('Crontab定时任务开始运行,运行时间:'+str_time_now.strftime("%Y-%m-%d %H:%M:%S"))
 
 #运行计划任务
 def runcron(bot,myWin):

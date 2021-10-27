@@ -198,10 +198,11 @@ class Bot():
             self.ws = ws.create_connection(uri)
             self.connect = True
             log_info('%i %s' % (config['Bot'],'登录成功'))
-            self.recvThread = threading.Thread(target=RecvMsg,args=(self.ws,self.bot,self.win,))
-            self.recvThread.setDaemon(True)
-            self.recvThread.setName('Recive message')
-            self.recvThread.start()
+            if config['EnableGroup']:
+                self.recvThread = threading.Thread(target=RecvMsg,args=(self.ws,self.bot,self.win,))
+                self.recvThread.setDaemon(True)
+                self.recvThread.setName('Recive message')
+                self.recvThread.start()
             return True
         except Exception as e:
             self.connect = False
