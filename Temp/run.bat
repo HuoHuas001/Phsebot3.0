@@ -1,4 +1,4 @@
 @echo off
-cd E:\MCServer\bedrock-server-1.17.40.06
+cd E:\MCServer\Je1.17.1
 E:
-bedrock_server.exe
+java -Xmx1024M -Xms512M -jar server.jar --nogui

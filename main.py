@@ -15,8 +15,6 @@ from Library.Tools.FakePlayer import *
 from Library.UIs.Window import *
 import subprocess
 import threading
-import time
-import asyncio
 import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Library.mcsm.http_req import startServer,stopServer,getServer,sendCmd
@@ -55,6 +53,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.qsl.addWidget(self.on_crontab)
         self.qsl.addWidget(self.on_xbox)
         self.qsl.addWidget(self.on_setting)
+
 
     def safe_exit(self):
         try:
@@ -271,6 +270,7 @@ class BDS(QWidget, Ui_BDS):
         }
         self.lastLine = ''
     def display(self,strs):
+        self.BDSLogs.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.BDSLogs.append(strs)
         self.catch_in_regular(strs)
         self.catch_regular(strs)

@@ -1,8 +1,8 @@
 #服务端文件
-ServerCmd: bedrock_server.exe
+ServerCmd: java -Xmx1024M -Xms512M -jar server.jar --nogui
 
 #服务端目录
-ServerPath: E:\MCServer\bedrock-server-1.17.40.06
+ServerPath: E:\MCServer\Je1.17.1
 
 #自动写入启动文件
 AutoWrite: true
