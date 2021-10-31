@@ -327,10 +327,11 @@ class Update():
         quitMsgBox.addButton(buttonN, QMessageBox.NoRole)
         quitMsgBox.exec_()
         if quitMsgBox.clickedButton() == buttonY:
-            webbrowser.open('https://github.com/HuoHuas001/Phsebot3.0/releases/latest')
+            webbrowser.open('https://hub.fastgit.org/HuoHuas001/Phsebot3.0/releases/latest')
 
 
     def checkUpdate(self):
+        log_info('正在检查更新...')
         http = urllib3.PoolManager()
         # get请求指定网址
         url = "https://api.github.com/repos/HuoHuas001/Phsebot3.0/releases/latest"
