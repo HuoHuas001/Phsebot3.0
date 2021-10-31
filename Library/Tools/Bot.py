@@ -7,6 +7,17 @@ import websocket as ws
 from Library.Tools.Logger import *
 
 count = 0
+def replaceRE(re_list,action):
+    l = []
+    for i in re_list:
+        if type(i) == tuple:
+            for t in i:
+                l.append(t)
+        elif type(i) == str:
+            l.append(i)
+    for i in range(1,len(l)+1):
+        action = action.replace('$'+str(i),l[i-1])
+    return action
 
 def RecvMsg(websocket,bot,myWin):
     while True:
@@ -14,6 +25,7 @@ def RecvMsg(websocket,bot,myWin):
         try:
             j = json.loads(websocket.recv())
         except Exception as e:
+            log_error('Mirai已断开连接...')
             log_debug(e)
             break
 
@@ -47,27 +59,7 @@ def RecvMsg(websocket,bot,myWin):
                     for b in regular['group']:
                         p = re.findall(b['re'],msg)
                         if p != []:
-                            if type(p[0]) == tuple:
-                                if len(p[0]) == 1:
-                                    cmd = b['action'].replace('$1',p[0][0])
-                                elif len(p[0]) == 2:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1])
-                                elif len(p[0]) == 3:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2])
-                                elif len(p[0]) == 4:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3])
-                                elif len(p[0]) == 5:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4])
-                                elif len(p[0]) == 6:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5])
-                                elif len(p[0]) == 7:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5]).replace('$7',p[0][6])
-                                elif len(p[0]) == 8:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5]).replace('$7',p[0][6]).replace('$8',p[0][7])
-                                elif len(p[0]) == 9:
-                                    cmd = b['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5]).replace('$7',p[0][6]).replace('$8',p[0][7]).replace('$9',p[0][8])
-                            elif type(p[0]) == str:
-                                cmd = b['action'].replace('$1',p[0])
+                            cmd = replaceRE(p,b['action'])
                             #发群消息
                             rps = replacegroup(myWin.on_bds.Port,cmd[2:],sendername,senderqq)
                             if b['perm'] == True:
@@ -210,50 +202,59 @@ class Bot():
             return False
 
     def send_at(self,group,senderqq,msg):
-        msgjson = {
-            "target":group,
-            "messageChain":[{"type": "At", "target": senderqq, "display": ""}]
-        }
-        if msg != False:
-            msgjson['messageChain'].append({"type":"Plain", "text":msg})
+        try:
+            msgjson = {
+                "target":group,
+                "messageChain":[{"type": "At", "target": senderqq, "display": ""}]
+            }
+            if msg != False:
+                msgjson['messageChain'].append({"type":"Plain", "text":msg})
 
-        mj = {
-            "syncId": 1234,
-            "command": "sendGroupMessage",
-            "subCommand": None,
-            "content": msgjson
-        }
-        self.ws.send(json.dumps(mj))
+            mj = {
+                "syncId": 1234,
+                "command": "sendGroupMessage",
+                "subCommand": None,
+                "content": msgjson
+            }
+            self.ws.send(json.dumps(mj))
+        except Exception as e:
+            log_debug(e)
 
 
     def recallmsg(self,Sourceid):
-        recjson = {
-            "target":Sourceid
-        }
-        mj = {
-            "syncId": 12345,
-            "command": "recall",
-            "subCommand": None,
-            "content": recjson
-        }
-        self.ws.send(json.dumps(mj))
+        try:
+            recjson = {
+                "target":Sourceid
+            }
+            mj = {
+                "syncId": 12345,
+                "command": "recall",
+                "subCommand": None,
+                "content": recjson
+            }
+            self.ws.send(json.dumps(mj))
+        except Exception as e:
+            log_debug(e)
 
     #修改群名
     def changeName(self,member,group,name):
-        namejson = {
-            "target": group,
-            "memberId": member,
-            "info": {
-                "name": name,
+        try:
+            namejson = {
+                "target": group,
+                "memberId": member,
+                "info": {
+                    "name": name,
+                }
             }
-        }
-        mj = {
-            "syncId": 1234,
-            "command": "memberInfo",
-            "subCommand": 'update',
-            "content": namejson
-        }
-        self.ws.send(json.dumps(mj))
+            mj = {
+                "syncId": 1234,
+                "command": "memberInfo",
+                "subCommand": 'update',
+                "content": namejson
+            }
+            self.ws.send(json.dumps(mj))
+        except Exception as e:
+            log_debug(e)
 
     def sendGroupMsg(self,group,text):
         try:

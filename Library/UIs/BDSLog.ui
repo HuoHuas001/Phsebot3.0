@@ -34,6 +34,9 @@
      <height>431</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
   </widget>
   <widget class="QPushButton" name="RunCmd">
    <property name="geometry">
@@ -58,10 +61,22 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>490</y>
+     <y>488</y>
      <width>81</width>
-     <height>41</height>
+     <height>61</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans SC</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:10px;
+padding:2px 4px;
+background-color:white;</string>
    </property>
    <property name="text">
     <string>启动服务器</string>
@@ -71,10 +86,24 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>490</y>
+     <y>488</y>
      <width>81</width>
-     <height>41</height>
+     <height>61</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans SC</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:10px;
+padding:2px 4px;
+background-color:white;
+
+</string>
    </property>
    <property name="text">
     <string>清除控制台</string>
@@ -84,10 +113,24 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>490</y>
+     <y>488</y>
      <width>81</width>
-     <height>41</height>
+     <height>61</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans SC</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:10px;
+padding:2px 4px;
+background-color:white;
+
+</string>
    </property>
    <property name="text">
     <string>强制停止</string>
@@ -102,6 +145,9 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
   </widget>
   <widget class="QLabel" name="ServerVersion">
    <property name="geometry">
@@ -111,6 +157,13 @@
      <width>391</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans SC</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
    </property>
    <property name="text">
     <string>服务器版本:</string>
@@ -125,6 +178,13 @@
      <height>16</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans SC</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
     <string>服务器存档:</string>
    </property>
@@ -138,26 +198,57 @@
      <height>16</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>HarmonyOS Sans SC</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
     <string>服务器状态:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="StateBlock">
+  <widget class="QWidget" name="bg" native="true">
    <property name="geometry">
     <rect>
-     <x>350</x>
-     <y>530</y>
-     <width>16</width>
-     <height>16</height>
+     <x>275</x>
+     <y>488</y>
+     <width>391</width>
+     <height>62</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color:rgb(147, 147, 147)</string>
-   </property>
-   <property name="text">
-    <string/>
+    <string notr="true">background-color:rgb(255, 255, 255);
+border-radius:10px;</string>
    </property>
   </widget>
+  <widget class="QWidget" name="StateBlock" native="true">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>528</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:5px;
+padding:2px 4px;
+background-color:rgb(147,147,147);</string>
+   </property>
+  </widget>
+  <zorder>bg</zorder>
+  <zorder>BDSLogs</zorder>
+  <zorder>RunCmd</zorder>
+  <zorder>pushButton</zorder>
+  <zorder>pushButton_2</zorder>
+  <zorder>pushButton_3</zorder>
+  <zorder>InputCmd</zorder>
+  <zorder>ServerVersion</zorder>
+  <zorder>ServerWorld</zorder>
+  <zorder>ServerState</zorder>
+  <zorder>StateBlock</zorder>
  </widget>
  <resources>
   <include location="../../image.qrc"/>

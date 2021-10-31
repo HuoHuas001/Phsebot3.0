@@ -22,7 +22,7 @@ from PyQt5.QtCore import Qt,QPoint,QPropertyAnimation,QRect
 from PyQt5.QtGui import QIcon,QStandardItemModel,QStandardItem,QTextCursor,QMouseEvent
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QStackedLayout, QWidget,
                              QToolBar, QToolButton, QStyle, QColorDialog, QFontDialog,
-                            QVBoxLayout, QGroupBox, QRadioButton,QPushButton,QHeaderView)
+                            QVBoxLayout, QGroupBox, QRadioButton,QPushButton,QHeaderView,)
 
 class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
@@ -41,6 +41,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionCrontab.triggered.connect(self.show_panel)
         self.actionXbox.triggered.connect(self.show_panel)
         self.actionSetting.triggered.connect(self.show_panel)
+        self.actionAbout.triggered.connect(self.showAbout)
         self.qsl = QStackedLayout(self.Show_Content)
         self.initFloating()
         #添加叠加样式
@@ -55,6 +56,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.qsl.addWidget(self.on_xbox)
         self.qsl.addWidget(self.on_setting)
 
+    def showAbout(self):
+        QMessageBox.about(self,"关于Phsebot",f"作者:HuoHuaCore\n版本:{Bot_Version}\nEmail:2351078777@qq.com\n发现任何问题可以发issue或邮件")
 
     def safe_exit(self):
         try:
@@ -173,7 +176,7 @@ class InLine_P(QtCore.QThread):
                     self.bds.pushButton.setEnabled(True)
                     self.bds.RunCmd.setEnabled(False)
                     self.bds.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
-                    self.bds.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
+                    self.bds.StateBlock.setStyleSheet("border-radius:5px;padding:2px 4px;background-color:rgb(147,147,147);")
                     self.bds.ServerVersion.setText("服务器版本:")
                     self.bds.ServerWorld.setText("服务器存档:")
                     self.bds.ServerState.setText("服务器状态:")
@@ -211,7 +214,7 @@ class InLine_P(QtCore.QThread):
                     self.bds.pushButton.setEnabled(True)
                     self.bds.RunCmd.setEnabled(False)
                     self.bds.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
-                    self.bds.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
+                    self.bds.StateBlock.setStyleSheet("border-radius:5px;padding:2px 4px;background-color:rgb(147,147,147);")
                     self.bds.ServerVersion.setText("服务器版本:")
                     self.bds.ServerWorld.setText("服务器存档:")
                     self.bds.ServerState.setText("服务器状态:")
@@ -228,7 +231,7 @@ class InLine_P(QtCore.QThread):
                     self.bds.pushButton.setEnabled(True)
                     self.bds.RunCmd.setEnabled(False)
                     self.bds.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/cancel.png)")
-                    self.bds.StateBlock.setStyleSheet("background-color:rgb(147, 147, 147)")
+                    self.bds.StateBlock.setStyleSheet("border-radius:5px;padding:2px 4px;background-color:rgb(147,147,147);")
                     self.bds.ServerVersion.setText("服务器版本:")
                     self.bds.ServerWorld.setText("服务器存档:")
                     self.bds.ServerState.setText("服务器状态:")
@@ -270,6 +273,7 @@ class BDS(QWidget, Ui_BDS):
             "tps":20.0
         }
         self.lastLine = ''
+
     def display(self,strs):
         self.BDSLogs.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.BDSLogs.append(strs)
@@ -341,7 +345,8 @@ class BDS(QWidget, Ui_BDS):
                     bot.sendGroupMsg(b,Language['OpenWorld'].replace('%World%',self.World))
             #加载端口
         if 'IPv4' in line:
-            self.Port = int(re.findall(r'^\[INFO\]\sIPv4\ssupported,\sport:\s(.+?)$',line)[0])
+            port_re = re.findall(r'INFO\]\sIPv4\ssupported,\sport:\s(.+?)$',line)
+            self.Port = int(port_re[0])
             if Language['PortOpen'] != False:
                 for b in config["Group"]:
                     bot.sendGroupMsg(b,Language['PortOpen'].replace('%Port%',str(self.Port)))
@@ -618,7 +623,7 @@ class BDS(QWidget, Ui_BDS):
         self.pushButton_3.setEnabled(True)
         self.RunCmd.setEnabled(True)
         self.RunCmd.setStyleSheet("border-image:url(:/q/Library/Images/check.png)")
-        self.StateBlock.setStyleSheet('background-color:rgb(75,183,75)')
+        self.StateBlock.setStyleSheet('border-radius:5px;padding:2px 4px;background-color:rgb(75,183,75);')
 
         #开启进程
         self.bds = subprocess.Popen('Temp\\run.bat', stdout=subprocess.PIPE,stderr=subprocess.PIPE,stdin=-1,bufsize=1,shell=True)
@@ -1067,4 +1072,6 @@ if __name__ == '__main__':
         crontab_thread.setDaemon(True)
         crontab_thread.setName('Crontab')
         crontab_thread.start()
+    update = Update()
+    update.checkUpdate()
     os._exit(app.exec_())

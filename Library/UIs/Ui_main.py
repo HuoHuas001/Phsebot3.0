@@ -145,9 +145,6 @@ class Ui_MainWindow(object):
         quitMsgBox.addButton(buttonY, QMessageBox.YesRole)
         quitMsgBox.addButton(buttonN, QMessageBox.NoRole)
         quitMsgBox.exec_()
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/q/Library/Images/window.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        quitMsgBox.setWindowIcon(icon)
         # 判断返回值，如果点击的是Yes按钮，我们就关闭组件和应用，否则就忽略关闭事件
         if quitMsgBox.clickedButton() == buttonY:
             if self.safe_exit():

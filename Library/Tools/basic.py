@@ -2,12 +2,16 @@ from os import write
 import yaml
 import json
 from Library.Tools.motd import Server
+from PyQt5.QtWidgets import QPushButton,QMessageBox
 from Library.Tools.tool import WriteYaml
 from Library.Tools.Logger import *
 import re
 from datetime import datetime
 import time
 import psutil
+import urllib3
+import webbrowser
+Bot_Version = 'v3.0.1'
 
 def read_file(file):
     with open(file,'r',encoding='utf-8') as f:
@@ -191,6 +195,18 @@ def replaceconsole(Port,string):
         .replace(r'%sec%',sec)
     return s
 
+def replaceRE(re_list,action):
+    l = []
+    for i in re_list:
+        if type(i) == tuple:
+            for t in i:
+                l.append(t)
+        elif type(i) == str:
+            l.append(i)
+    for i in range(1,len(l)+1):
+        action = action.replace('$'+str(i),l[i-1])
+    return action
+
 #控制台正则匹配
 def useconsoleregular(myWin,bot,Port,text):
     regular = getRegular('console')
@@ -198,27 +214,7 @@ def useconsoleregular(myWin,bot,Port,text):
         p = re.findall(i['re'],text)
         #执行操作
         if p != []:
-            if type(p[0]) == tuple:
-                if len(p[0]) == 1:
-                    cmd = i['action'].replace('$1',p[0][0])
-                elif len(p[0]) == 2:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1])
-                elif len(p[0]) == 3:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2])
-                elif len(p[0]) == 4:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3])
-                elif len(p[0]) == 5:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4])
-                elif len(p[0]) == 6:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5])
-                elif len(p[0]) == 7:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5]).replace('$7',p[0][6])
-                elif len(p[0]) == 8:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5]).replace('$7',p[0][6]).replace('$8',p[0][7])
-                elif len(p[0]) == 9:
-                    cmd = i['action'].replace('$1',p[0][0]).replace('$2',p[0][1]).replace('$3',p[0][2]).replace('$4',p[0][3]).replace('$5',p[0][4]).replace('$6',p[0][5]).replace('$7',p[0][6]).replace('$8',p[0][7]).replace('$9',p[0][8])
-            elif type(p[0]) == str:
-                cmd = i['action']
+            cmd = replaceRE(p,i['re'])
             #发群消息
             rps = replaceconsole(Port,cmd[2:])
             if i['action'][:2] == '>>':
@@ -314,6 +310,39 @@ def changeFile(file,dic):
         Crontab = dic
         crontab()
         WriteYaml('data/crontab.yml',Crontab)
+
+class Update():
+    def __init__(self) -> None:
+        pass
+
+    def showEvent(self, body):
+        quitMsgBox = QMessageBox()
+        quitMsgBox.setWindowTitle('Phsebot - 更新提示')
+        version = body['tag_name']
+        bodys = body['body'].replace('\\r','\r').replace('\\n','\n')
+        quitMsgBox.setText(f'Phsebot发现新版本\n版本号:{version}\n更新内容:\n\n{bodys}')
+        buttonY = QPushButton('确定')
+        buttonN = QPushButton('取消')
+        quitMsgBox.addButton(buttonY, QMessageBox.YesRole)
+        quitMsgBox.addButton(buttonN, QMessageBox.NoRole)
+        quitMsgBox.exec_()
+        if quitMsgBox.clickedButton() == buttonY:
+            webbrowser.open('https://github.com/HuoHuas001/Phsebot3.0/releases/latest')
+
+
+    def checkUpdate(self):
+        http = urllib3.PoolManager()
+        # get请求指定网址
+        url = "https://api.github.com/repos/HuoHuas001/Phsebot3.0/releases/latest"
+        res = http.request("GET",url)
+        #检测是否请求成功
+        if res.status == 200:
+            data = json.loads(res.data.decode("utf-8"))
+            if Bot_Version != data["tag_name"]:
+                self.showEvent(data)
+        else:
+            log_warn(f'检测更新时出了问题{res.status}')
+
 
 def readFile():
     global config,Language,Regular,Xboxid,Crontab
