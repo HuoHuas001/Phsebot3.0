@@ -1,6 +1,8 @@
 ![example](https://img.shields.io/badge/Python-3.7.9-blue.svg) 
 ![example](https://img.shields.io/github/downloads/HuoHuas001/Phsebot3.0/total)
 ![example](https://img.shields.io/badge/Version-Ver_3.0.1-green.svg) 
+![example](https://img.shields.io/github/stars/HuoHuas001/Phsebot3.0)
+![fork](https://img.shields.io/github/forks/HuoHuas001/Phsebot3.0)
 # Phsebot3.0 <img src="Library/Images/window.png" style="width:40px;height:40px;float:right"/>
 
 ## 🤨Phsebot是什么?🤨
