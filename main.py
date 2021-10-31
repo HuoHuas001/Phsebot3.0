@@ -28,7 +28,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
-        #self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
+        #Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
+        #self.setWindowFlags(Qt.WindowStaysOnTopHint)
         #按钮事件
         self.BDS_logs.clicked.connect(self.show_panel)
         self.Regular.clicked.connect(self.show_panel)
