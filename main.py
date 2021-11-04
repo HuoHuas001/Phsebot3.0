@@ -60,6 +60,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         QMessageBox.about(self,"关于Phsebot",f"作者:HuoHuaCore\n版本:{Bot_Version}\nEmail:2351078777@qq.com\n发现任何问题可以发issue或邮件")
 
     def safe_exit(self):
+        plugin.callback('Exit')
         try:
             if self.on_bds.getBDSPoll():
                 self.on_bds.Runcmd('stop')
@@ -125,19 +126,12 @@ class InLine(QtCore.QThread):
                 li = line.decode('UTF8').replace('\r','').replace('\n','')
             except Exception as e:
                 li = line.decode('gbk').replace('\r','').replace('\n','')
+            plugin.callback('ConsoleUpdate',li)
             self.updated.emit(li)
             
         self.bds.stdout.close()
         self.bds.wait()
 
-    def err(self):
-        for li in iter(self.bds.stderr.readline, b''):
-            try:
-                li = li.decode('UTF8').replace('\n','')
-            except Exception as e:
-                li = li.decode('gbk').replace('\n','')
-            self.updated.emit(li)
-        self.err()
 
     def run(self):
         self.out()
@@ -154,6 +148,7 @@ class InLine_ERR(QtCore.QThread):
                 li = li.decode('UTF8').replace('\n','').replace('\r','')
             except Exception as e:
                 li = li.decode('gbk').replace('\n','').replace('\r','')
+            plugin.callback('ConsoleUpdate',li)
             self.updated.emit(li)
         
 
@@ -181,6 +176,7 @@ class InLine_P(QtCore.QThread):
                     self.bds.ServerWorld.setText("服务器存档:")
                     self.bds.ServerState.setText("服务器状态:")
                     myWin.setWindowTitle('Phsebot')
+                    plugin.callback('StoppedServer')
                     break
 
                 elif not self.bds.getBDSPoll() and self.bds.NormalStop == False and config['AutoRestart']:
@@ -219,6 +215,7 @@ class InLine_P(QtCore.QThread):
                     self.bds.ServerWorld.setText("服务器存档:")
                     self.bds.ServerState.setText("服务器状态:")
                     myWin.setWindowTitle('Phsebot')
+                    plugin.callback('StoppedServer')
                     break
         else:
             from Library.mcsm.http_req import startServer,stopServer,getServer,sendCmd
@@ -313,6 +310,8 @@ class BDS(QWidget, Ui_BDS):
             #玩家退服
             if re.findall(r'^\[INFO\]\sPlayer\sdisconnected:\s(.+?),\sxuid:\s(.+?)$',updateLine) != []:
                 r = re.findall(r'^\[INFO\]\sPlayer\sdisconnected:\s(.+?),\sxuid:\s(.+?)$',updateLine)
+                player = r[0][0]
+                plugin.callback('PlayerExit',player)
                 if Language['PlayerLeft'] != False:
                     for g in config["Group"]:
                         bot.sendGroupMsg(g,Language['PlayerLeft'].replace('%player%',r[0][0]).replace(r'%xuid%',r[0][1]))
@@ -320,6 +319,8 @@ class BDS(QWidget, Ui_BDS):
             #玩家进服
             if re.findall(r'^\[INFO\]\sPlayer\sconnected:\s(.+?),\sxuid:\s(.+?)$',updateLine) != []:
                 r = re.findall(r'^\[INFO\]\sPlayer\sconnected:\s(.+?),\sxuid:\s(.+?)$',updateLine)
+                player = r[0][0]
+                plugin.callback('PlayerJoin',player)
                 if Language['PlayerJoin'] != False:
                     for g in config["Group"]:
                         bot.sendGroupMsg(g,Language['PlayerJoin'].replace('%player%',r[0][0]).replace(r'%xuid%',r[0][1]))
@@ -333,6 +334,7 @@ class BDS(QWidget, Ui_BDS):
         if 'INFO] Version' in line:
             self.Version = re.findall(r'Version\s(.+?)\s',line)[0]
             self.ServerVersion.setText("服务器版本: "+self.Version)
+            plugin.callback('LoadVersion',self.Version)
             if Language['ServerVersion'] != False:
                 for b in config["Group"]:
                     bot.sendGroupMsg(b,Language['ServerVersion'].replace('%Version%',self.Version))
@@ -340,6 +342,7 @@ class BDS(QWidget, Ui_BDS):
         if 'opening' in line:
             self.World = re.findall(r'opening\s(.+?)[\r\s]',line)[0].replace('worlds/','')
             self.ServerWorld.setText("服务器存档: "+self.World)
+            plugin.callback('OpenWorld',self.Version)
             if Language['OpenWorld'] != False:
                 for b in config["Group"]:
                     bot.sendGroupMsg(b,Language['OpenWorld'].replace('%World%',self.World))
@@ -347,6 +350,7 @@ class BDS(QWidget, Ui_BDS):
         if 'IPv4' in line:
             port_re = re.findall(r'INFO\]\sIPv4\ssupported,\sport:\s(.+?)$',line)
             self.Port = int(port_re[0])
+            plugin.callback('LoadPort',self.Port)
             if Language['PortOpen'] != False:
                 for b in config["Group"]:
                     bot.sendGroupMsg(b,Language['PortOpen'].replace('%Port%',str(self.Port)))
@@ -360,10 +364,12 @@ class BDS(QWidget, Ui_BDS):
             ConnectAllPlayer()
             self.Started = True
             ChangeBotName(bot,self.Port,self.Started)
+            plugin.callback('ServerStarted')
             myWin.setWindowTitle('Phsebot - '+self.World+' '+self.Version)
 
             #关服中
         if '[INFO] Server stop requested.' in line:
+            plugin.callback('StoppingServer')
             if Language['ServerStopping'] != False:
                 for b in config["Group"]:
                     bot.sendGroupMsg(b,Language['ServerStopping'])
@@ -378,6 +384,7 @@ class BDS(QWidget, Ui_BDS):
 
             #崩溃
         if 'Crashed' in line:
+            plugin.callback('Crash')
             if Language['Crashed'] != False:
                 for b in config["Group"]:
                     bot.sendGroupMsg(b,Language['Crashed'])
@@ -411,7 +418,7 @@ class BDS(QWidget, Ui_BDS):
                     pl += ' '+i
             card = card.replace('%Players%',pl)
             #替换logo
-            if config['ServerInfoCard']['Logo'] != '':
+            if config['ServerInfoCard']['Logo'] == '':
                 card = card.replace(r'%Logo%','https:\/\/z3.ax1x.com\/2021\/09\/09\/hOPbZQ.png')
             else:
                 card = card.replace(r'%Logo%',config['ServerInfoCard']['Logo'])
@@ -641,8 +648,12 @@ class BDS(QWidget, Ui_BDS):
         self.pro.start()
         self.pro.updated.connect(self.display)
 
+        #插件事件
+        plugin.callback('StartingServer')
+
     def forceStop(self):
         self.NormalStop = True
+        plugin.callback('ForcedStop')
         #修改界面
         self.BDSLogs.append('[Phsebot] 正在对服务端执行强制停止命令')
         self.pushButton_3.setEnabled(False)
@@ -687,6 +698,7 @@ class BDS(QWidget, Ui_BDS):
         if cmd[:4] == 'stop':
             self.NormalStop = True
         #发送命令
+        plugin.callback('RunCmd',cmd)
         if not config['mcsm']['enable']:
             if self.getBDSPoll():
                 if not '\n' in cmd:
@@ -1055,12 +1067,59 @@ class Xbox(QWidget,Ui_Xbox):
         changeFile('Xboxid',XboxidX)
         self.update()
 
+class Plugin():
+    def __init__(self) -> None:
+        self.f = os.path.exists('Library/Loader')
+        if self.f:
+            from Library.Loader.main import AUTHOR,VERSION,INITFUNC
+            log_info('Plugin Loader initing...')
+            INITFUNC(myWin,bot)
+            log_info(f'Plugin Loader V{VERSION} Author:{AUTHOR}')
+    def callback(self,event,args=()) -> None:
+        if self.f:
+            from Library.Loader.main import Events
+            Event = [
+                'PlayerJoin',
+                'PlayerExit',
+                'LoadVersion',
+                'OpenWorld',
+                'LoadPort',
+                'ConsoleUpdate',
+                'RunCmd']
+            for i in Events[event]:
+                if event in Event:
+                    i(args)
+                else:
+                    i()
+    
+    def Running(self):
+        if self.f:
+            self.callback('Running')
+
+    def checkCommand(self,cmd:str,group:int,sender:int) -> bool:
+        from Library.Loader.main import command
+        class groups():
+            def __init__(self) -> None:
+                self.group = group
+                self.senderId = sender
+        for i in command:
+            if cmd in i.cmd:
+                g = groups()
+                i.recall(g)
+                return True
+        else:
+            return False
+
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     myWin = MyWindow()
-    myWin.show()
     bot = Bot()
-    bot.login(bot,myWin)
+    #加载插件加载器
+    plugin = Plugin()
+    plugin.Running()
+    bot.login(bot,myWin,plugin)
     myWin.actionReconnect.triggered.connect(bot.tReconnect)
     myWin.actionDisconnect.triggered.connect(bot.disconnect)
     #写入启动bat
@@ -1074,4 +1133,5 @@ if __name__ == '__main__':
         crontab_thread.start()
     update = Update()
     update.checkUpdate()
+    myWin.show()
     os._exit(app.exec_())

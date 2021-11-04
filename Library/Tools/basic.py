@@ -11,7 +11,7 @@ import time
 import psutil
 import urllib3
 import webbrowser
-Bot_Version = 'v3.0.1'
+Bot_Version = '3.0.1'
 
 def read_file(file):
     with open(file,'r',encoding='utf-8') as f:
@@ -214,7 +214,7 @@ def useconsoleregular(myWin,bot,Port,text):
         p = re.findall(i['re'],text)
         #执行操作
         if p != []:
-            cmd = replaceRE(p,i['re'])
+            cmd = replaceRE(p,i['action'])
             #发群消息
             rps = replaceconsole(Port,cmd[2:])
             if i['action'][:2] == '>>':

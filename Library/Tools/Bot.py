@@ -19,7 +19,7 @@ def replaceRE(re_list,action):
         action = action.replace('$'+str(i),l[i-1])
     return action
 
-def RecvMsg(websocket,bot,myWin):
+def RecvMsg(websocket,bot,myWin,pl):
     while True:
         time.sleep(0.1)
         try:
@@ -53,6 +53,7 @@ def RecvMsg(websocket,bot,myWin):
                             Sourceid = i['id']
                 #验证是否是管理的群
                 if group in config['Group']:
+                    #from main import plugin
                     #验证正则
                     regular = getRegular('group')
                     #print()
@@ -75,6 +76,8 @@ def RecvMsg(websocket,bot,myWin):
                                             myWin.on_bds.Botruncmd(rps+' '+str(group))
                                         elif 'unbind' in cmd[2:]:
                                             myWin.on_bds.Botruncmd(rps+' '+str(group))
+                                        elif pl.checkCommand(cmd[2:],group,senderqq):
+                                            pass
                                         else:
                                             myWin.on_bds.Botruncmd(rps)
                                 else:
@@ -93,6 +96,8 @@ def RecvMsg(websocket,bot,myWin):
                                         myWin.on_bds.Botruncmd(rps+' '+str(group))
                                     elif 'unbind' in cmd[2:]:
                                         myWin.on_bds.Botruncmd(rps+' '+str(group))
+                                    elif pl.checkCommand(cmd[2:],group,senderqq):
+                                        pass
                                     else:
                                         myWin.on_bds.Botruncmd(rps)
                         else:
@@ -180,10 +185,11 @@ class Bot():
     def __init__(self) -> None:
         self.reconnect_N = 0
 
-    def login(self,sb,win):
+    def login(self,sb,win,pl):
         try:
             self.bot = sb
             self.win = win
+            self.pl = pl
             key = config['Key']
             url = config['BotURL']
             uri = url+'/all?verifyKey=%s&qq=%i' % (key,config['Bot'])
@@ -191,7 +197,7 @@ class Bot():
             self.connect = True
             log_info('%i %s' % (config['Bot'],'登录成功'))
             if config['EnableGroup']:
-                self.recvThread = threading.Thread(target=RecvMsg,args=(self.ws,self.bot,self.win,))
+                self.recvThread = threading.Thread(target=RecvMsg,args=(self.ws,self.bot,self.win,self.pl))
                 self.recvThread.setDaemon(True)
                 self.recvThread.setName('Recive message')
                 self.recvThread.start()
