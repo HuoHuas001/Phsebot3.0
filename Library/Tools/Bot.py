@@ -54,6 +54,7 @@ def RecvMsg(websocket,bot,myWin,pl):
                 #验证是否是管理的群
                 if group in config['Group']:
                     #from main import plugin
+                    #
                     #验证正则
                     regular = getRegular('group')
                     #print()
