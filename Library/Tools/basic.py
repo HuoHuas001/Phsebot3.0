@@ -11,7 +11,7 @@ import time
 import psutil
 import urllib3
 import webbrowser
-Bot_Version = '3.0.1'
+Bot_Version = '3.0.2'
 
 def read_file(file):
     with open(file,'r',encoding='utf-8') as f:
@@ -338,6 +338,7 @@ class Update():
         res = http.request("GET",url)
         #检测是否请求成功
         if res.status == 200:
+            log_info('检测更新成功.')
             data = json.loads(res.data.decode("utf-8"))
             if Bot_Version != data["tag_name"]:
                 self.showEvent(data)
