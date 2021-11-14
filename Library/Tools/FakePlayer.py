@@ -27,16 +27,18 @@ def state(num):
         return '已停止'
 
 def RecvEvent():
-    from main import bot
+    bot = bots
     while ConnectED:
         time.sleep(0.1)
         #接受数据
         try:
             j = json.loads(fws.recv())
         except Exception as e:
-            j = {}
+            j = {'type':''}
             log_debug(e)
             log_error('假人服务出现了未知错误')
+            break
+            
 
 
         #列表(list)
@@ -156,8 +158,9 @@ def RecvEvent():
                     if Language['FakePlayerError'] != False:
                         bot.sendGroupMsg(i,Language['FakePlayerError'].replace(r'%error%',j['data']['reason']))  
 
-def Build_Connect():
-    global fws,ConnectED,ws
+def Build_Connect(bot):
+    global fws,ConnectED,ws,bots
+    bots = bot
     try:
         fws = create_connection(config['FakePlayerService']['URL'])
         ConnectED = True

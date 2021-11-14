@@ -7,6 +7,8 @@ from Library.UIs.Ui_regular import *
 from Library.UIs.Ui_crontab import *
 from Library.UIs.Ui_Setting import *
 from Library.UIs.Ui_xbox import *
+from Library.UIs.Ui_console import *
+from Library.UIs.Ui_Floating import *
 from Library.Tools.Bot import *
 from Library.Tools.basic import *
 from Library.Tools.tool import *
@@ -41,6 +43,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionCrontab.triggered.connect(self.show_panel)
         self.actionXbox.triggered.connect(self.show_panel)
         self.actionSetting.triggered.connect(self.show_panel)
+        self.actionConsoleN.triggered.connect(self.show_panel)
         self.actionAbout.triggered.connect(self.showAbout)
         self.qsl = QStackedLayout(self.Show_Content)
         self.initFloating()
@@ -50,11 +53,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.on_crontab = Crontab_C()
         self.on_setting = Setting()
         self.on_xbox = Xbox()
+        self.closeConsole()
         self.qsl.addWidget(self.on_bds)
         self.qsl.addWidget(self.on_regular)
         self.qsl.addWidget(self.on_crontab)
         self.qsl.addWidget(self.on_xbox)
         self.qsl.addWidget(self.on_setting)
+        self.qsl.addWidget(console)
+        
 
     def showAbout(self):
         QMessageBox.about(self,"关于Phsebot",f"作者:HuoHuaCore\n版本:{Bot_Version}\nEmail:2351078777@qq.com\n发现任何问题可以发issue或邮件")
@@ -90,6 +96,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
                 self.floating.show()
             if self.windowState() == Qt.WindowNoState:
                 self.floating.close()
+
+    def closeConsole(self) -> None:
+        console.close()
         
     def show_panel(self):
         ojn = self.sender().objectName()
@@ -105,7 +114,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             "actionRegular":1,
             "actionCrontab":2,
             "actionXbox":3,
-            "actionSetting":4
+            "actionSetting":4,
+            "actionConsoleN":5
         }
         if ojn in dic:
             index = dic[ojn]
@@ -113,6 +123,29 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         else:
             index = dic2[ojn]
             self.qsl.setCurrentIndex(index)
+
+    def closeEvent(self, event):
+        # 创建一个消息盒子（提示框）
+        quitMsgBox = QMessageBox()
+        # 设置提示框的标题
+        quitMsgBox.setWindowTitle('Phsebot - 警告')
+        # 设置提示框的内容
+        quitMsgBox.setText('你确定退出吗？')
+        # 创建两个点击的按钮，修改文本显示内容
+        buttonY = QPushButton('确定')
+        buttonN = QPushButton('取消')
+        # 将两个按钮加到这个消息盒子中去，并指定yes和no的功能
+        quitMsgBox.addButton(buttonY, QMessageBox.YesRole)
+        quitMsgBox.addButton(buttonN, QMessageBox.NoRole)
+        quitMsgBox.exec_()
+        # 判断返回值，如果点击的是Yes按钮，我们就关闭组件和应用，否则就忽略关闭事件
+        if quitMsgBox.clickedButton() == buttonY:
+            if self.safe_exit():
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.ignore()
 
 class InLine(QtCore.QThread):
     updated = QtCore.pyqtSignal(str)
@@ -1110,14 +1143,53 @@ class Plugin():
         else:
             return False
 
+#输出控制台
+class WriteConsole():
+    def write(self,string):
+        try:
+            console.write(string)
+        except:
+            pass
+
+class CThread(QtCore.QThread):
+    updated = QtCore.pyqtSignal()
+    def __init__(self) -> None:
+        super(CThread,self).__init__()
+        
+    def run(self):
+        while(1):
+            time.sleep(0.1)
+            self.updated.emit()
+
+#Console（摆脱cmd的启动）
+class Console(QWidget,Ui_OutPut):
+    def __init__(self) -> None:
+        super(Console,self).__init__()
+        self.setupUi(self)
+        self.thread = CThread()
+        self.thread.updated.connect(self.updateW)
+        self.thread.start()
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    myWin = MyWindow()
-    bot = Bot()
-    #加载插件加载器
-    plugin = Plugin()
+    def write(self,string:str) -> None:
+        st = string.replace('\n','').replace('\r','')
+        if st != '':
+            if '[DEBUG]' in st:
+                self.textEdit.append(f"<font color=\"#119ABC\">{st}</font>")
+            elif 'ERRO]' in st:
+                self.textEdit.append(f"<font color=\"#F14C4C\">{st}</font>")
+            elif 'WARN]' in st:
+                self.textEdit.append(f"<font color=\"#F5F543\">{st}</font>")
+            elif 'INFO]' in st:
+                self.textEdit.append(f"<font color=\"#23D18B\">{st}</font>")
+            else:
+                self.textEdit.append(st)
+        
+    def updateW(self):
+        self.textEdit.setReadOnly(True)
+        self.update()
+
+def Init():
     plugin.Running()
     bot.login(bot,myWin,plugin)
     myWin.actionReconnect.triggered.connect(bot.tReconnect)
@@ -1133,5 +1205,27 @@ if __name__ == '__main__':
         crontab_thread.start()
     update = Update()
     update.checkUpdate()
+    #连接假人
+    if config['FakePlayerService']['Enable']:
+        if Build_Connect(bot):
+            log_info('假人服务连接成功')
+        else:
+            log_error('假人连接时出现了错误')
+
+
+
+if __name__ == '__main__':
+    writeconsole = WriteConsole()
+    app = QApplication(sys.argv)
+    #构建Console
+    console = Console()
+    console.show()
+    sys.stdout = writeconsole
+    sys.stderr = writeconsole
+    myWin = MyWindow()
+    bot = Bot()
+    #加载插件加载器
+    plugin = Plugin()
     myWin.show()
+    threading.Thread(target=Init).start()
     os._exit(app.exec_())

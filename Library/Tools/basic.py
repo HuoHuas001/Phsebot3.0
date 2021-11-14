@@ -1,4 +1,5 @@
 from os import write
+import threading
 import yaml
 import json
 from Library.Tools.motd import Server
@@ -329,21 +330,27 @@ class Update():
         if quitMsgBox.clickedButton() == buttonY:
             webbrowser.open('https://hub.fastgit.org/HuoHuas001/Phsebot3.0/releases/latest')
 
+    def tc(self):
+        try:
+            log_info('正在检查更新...')
+            http = urllib3.PoolManager()
+            # get请求指定网址
+            url = "https://api.github.com/repos/HuoHuas001/Phsebot3.0/releases/latest"
+            res = http.request("GET",url)
+            #检测是否请求成功
+            if res.status == 200:
+                log_info('检测更新成功.')
+                data = json.loads(res.data.decode("utf-8"))
+                if Bot_Version != data["tag_name"]:
+                    self.showEvent(data)
+            else:
+                log_warn(f'检测更新时出了问题{res.status}')
+        except Exception as e:
+            log_debug(e)
+            log_error('检测更新时出现了未知的错误')
 
     def checkUpdate(self):
-        log_info('正在检查更新...')
-        http = urllib3.PoolManager()
-        # get请求指定网址
-        url = "https://api.github.com/repos/HuoHuas001/Phsebot3.0/releases/latest"
-        res = http.request("GET",url)
-        #检测是否请求成功
-        if res.status == 200:
-            log_info('检测更新成功.')
-            data = json.loads(res.data.decode("utf-8"))
-            if Bot_Version != data["tag_name"]:
-                self.showEvent(data)
-        else:
-            log_warn(f'检测更新时出了问题{res.status}')
+        threading.Thread(target=self.tc).start()
 
 
 def readFile():

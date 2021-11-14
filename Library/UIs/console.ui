@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OutPut</class>
+ <widget class="QWidget" name="OutPut">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>681</width>
+    <height>551</height>
+   </rect>
+  </property>
+  <property name="cursor">
+   <cursorShape>IBeamCursor</cursorShape>
+  </property>
+  <property name="windowTitle">
+   <string>Phsebot Console</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../image.qrc">
+    <normaloff>:/q/Library/Images/creative_icon.png</normaloff>:/q/Library/Images/creative_icon.png</iconset>
+  </property>
+  <property name="toolTip">
+   <string comment="Phsebot Conole" extracomment="Phsebot Conole"/>
+  </property>
+  <property name="statusTip">
+   <string comment="Phsebot Conole" extracomment="Phsebot Conole"/>
+  </property>
+  <property name="whatsThis">
+   <string comment="Phsebot Conole" extracomment="Phsebot Conole"/>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <widget class="QTextEdit" name="textEdit">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>661</width>
+     <height>501</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>520</y>
+     <width>581</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>600</x>
+     <y>520</y>
+     <width>71</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>run</string>
+   </property>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../../image.qrc"/>
+ </resources>
+ <connections/>
+</ui>

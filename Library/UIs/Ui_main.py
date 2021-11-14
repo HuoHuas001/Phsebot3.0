@@ -8,8 +8,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QPushButton,QMessageBox
-from Library.UIs.Ui_Floating import *
 
 
 class Ui_MainWindow(object):
@@ -99,6 +97,8 @@ class Ui_MainWindow(object):
         self.actionXbox.setObjectName("actionXbox")
         self.actionSetting = QtWidgets.QAction(MainWindow)
         self.actionSetting.setObjectName("actionSetting")
+        self.actionConsoleN = QtWidgets.QAction(MainWindow)
+        self.actionConsoleN.setObjectName("actionConsoleN")
         self.menu.addAction(self.actionAbout)
         self.menuMirai.addAction(self.actionReconnect)
         self.menuMirai.addAction(self.actionDisconnect)
@@ -108,6 +108,7 @@ class Ui_MainWindow(object):
         self.menu_2.addAction(self.actionXbox)
         self.menu_2.addAction(self.actionSetting)
         self.menu_2.addSeparator()
+        self.menu_2.addAction(self.actionConsoleN)
         self.menubar.addAction(self.menu_2.menuAction())
         self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menuMirai.menuAction())
@@ -118,6 +119,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Phsebot"))
+        self.BDS_logs.setToolTip(_translate("MainWindow", "BDS Console", "BDS Console"))
         self.menu.setTitle(_translate("MainWindow", "菜单"))
         self.menuMirai.setTitle(_translate("MainWindow", "Mirai"))
         self.menu_2.setTitle(_translate("MainWindow", "视图"))
@@ -130,28 +132,5 @@ class Ui_MainWindow(object):
         self.actionCrontab.setText(_translate("MainWindow", "定时任务"))
         self.actionXbox.setText(_translate("MainWindow", "Xbox名称"))
         self.actionSetting.setText(_translate("MainWindow", "设置"))
-
-    def closeEvent(self, event):
-        # 创建一个消息盒子（提示框）
-        quitMsgBox = QMessageBox()
-        # 设置提示框的标题
-        quitMsgBox.setWindowTitle('Phsebot - 警告')
-        # 设置提示框的内容
-        quitMsgBox.setText('你确定退出吗？')
-        # 创建两个点击的按钮，修改文本显示内容
-        buttonY = QPushButton('确定')
-        buttonN = QPushButton('取消')
-        # 将两个按钮加到这个消息盒子中去，并指定yes和no的功能
-        quitMsgBox.addButton(buttonY, QMessageBox.YesRole)
-        quitMsgBox.addButton(buttonN, QMessageBox.NoRole)
-        quitMsgBox.exec_()
-        # 判断返回值，如果点击的是Yes按钮，我们就关闭组件和应用，否则就忽略关闭事件
-        if quitMsgBox.clickedButton() == buttonY:
-            if self.safe_exit():
-                event.accept()
-            else:
-                event.ignore()
-        else:
-            event.ignore()
-
+        self.actionConsoleN.setText(_translate("MainWindow", "控制台"))
 import image_rc

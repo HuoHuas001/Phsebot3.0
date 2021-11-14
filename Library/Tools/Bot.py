@@ -25,6 +25,7 @@ def RecvMsg(websocket,bot,myWin,pl):
         try:
             j = json.loads(websocket.recv())
         except Exception as e:
+            j={}
             log_error('Mirai已断开连接...')
             log_debug(e)
             break
@@ -180,6 +181,11 @@ def RecvMsg(websocket,bot,myWin,pl):
                 log_debug(e)
                 log_error('出现了内部错误')
 
+        #登录消息
+        elif 'syncId' in j and j['syncId'] == '6666' and 'data' in j:
+            ij = j['data']
+            log_info('%s %s' % (ij['nickname']+f'({bot.qq})','登录成功'))
+
 class Bot():
     def __init__(self) -> None:
         self.reconnect_N = 0
@@ -189,12 +195,19 @@ class Bot():
             self.bot = sb
             self.win = win
             self.pl = pl
+            self.qq = config['Bot']
             key = config['Key']
             url = config['BotURL']
             uri = url+'/all?verifyKey=%s&qq=%i' % (key,config['Bot'])
             self.ws = ws.create_connection(uri)
             self.connect = True
-            log_info('%i %s' % (config['Bot'],'登录成功'))
+            
+            self.ws.send(json.dumps({
+                "syncId": 6666,
+                "command": 'botProfile',
+                "subCommand": None,
+                "content": {}
+            }))
             if config['EnableGroup']:
                 self.recvThread = threading.Thread(target=RecvMsg,args=(self.ws,self.bot,self.win,self.pl))
                 self.recvThread.setDaemon(True)
@@ -311,7 +324,7 @@ class Bot():
         log_info('重连中...')
         if self.reconnect_N < 10:
             while self.reconnect_N <= 10:
-                if self.login(self.bot,self.win):
+                if self.login(self.bot,self.win,self.pl):
                     self.reconnect_N = 0
                     break
                 else:

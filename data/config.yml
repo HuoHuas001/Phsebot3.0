@@ -79,7 +79,7 @@ ServerInfoCard:
 #假人服务
 FakePlayerService:
   Enable: true
-  URL: 'ws://127.0.0.1:54321'
+  URL: 'ws://127.0.0.1:12345'
   Control:
     #开服自动连接假人
     StartConnect: true
